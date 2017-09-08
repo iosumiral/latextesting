@@ -1,0 +1,26 @@
+\backgroundsetup{
+	%position=current page.south,
+	placement=bottom,
+	angle=0,
+	opacity=1,
+	scale=1,
+	contents={
+		\includegraphics[width=\paperwidth]{footer.png}
+	}
+}
+
+\newpagestyle{frontpage}[\large\sffamily]{%
+	
+	\sethead{\includegraphics[scale=1,]{logo_w.png}}{}{}
+	\setfoot{\footers{nicepeopleatwork.com}{}{}}%
+}
+
+\newpagestyle{content}[\large\sffamily]{%
+  \sethead{\includegraphics[scale=1]{logo_color.png}}{}{}
+  \setfoot{\footers{nicepeopleatwork.com}}{\footers{\usepage / \pageref{LastPage}}}{}%
+}
+
+\newpagestyle{backpage}[\large\sffamily]{%
+	\sethead{}{}{}
+	\setfoot{\footers{nicepeopleatwork.com}}{\includegraphics[scale=1]{logo_w.png}}{}%
+}

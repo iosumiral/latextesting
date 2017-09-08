@@ -1,0 +1,1068 @@
+\documentclass[titlepage]{article}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage[toc,page]{appendix}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{natbib}
+\usepackage{a4wide}
+\usepackage{epigraph}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{blindtext}
+\usepackage{scrextend}
+
+\addtokomafont{labelinglabel}{\sffamily}
+
+\lstdefinestyle{luaStyle}{
+	language         = {[5.2]Lua},
+	basicstyle       = \ttfamily \upshape \small,
+	showstringspaces = false,
+	upquote          = true,
+	keywordstyle	 = \bfseries,
+	identifierstyle  = \itshape
+}
+
+\lstdefinestyle{matlabStyle}{
+	language         = Matlab,
+	basicstyle       = \ttfamily \upshape \small,
+	showstringspaces = false,
+	upquote          = true,
+	keywordstyle	 = \bfseries,
+	identifierstyle  = \itshape
+}
+
+\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=20pt}
+
+\title{{ Object recognition by Deep Convolutional Neural Networks}}
+% Beaumont Turrillas Lizarraga Arrasate Beorlegui Iriarte Zizur
+\author{\textsc{Iosu Miral}
+			\\
+			supervised by
+			\textsc{Dr. S\'{e}bastien Loisel}
+			and
+			\textsc{Dr. Nick Gilbert}
+		}
+
+\date{\today
+	\vfill
+		%\epigraph{And of course, the brain is not responsible for any of the sensations at all. The correct view [is] that the seat and source of sensation is the region of the heart.}{Aristotle \cite{Gross}}
+		%\epigraph{Artificial Intelligence: the art of making computers that behave like the ones in movies.}{Bill Bulko}
+		%\epigraph{By far, the greatest danger of Artificial Intelligence is that people conclude too early that they understand it.}{Eliezer Yudkowsky}
+		\epigraph{Forget artificial intelligence - in the brave new world of big data, it's artificial idiocy we should be looking out for.}{Tom Chatfield \cite{Chatfield}}
+		%\epigraph{Hope we're not just the biological boot loader for digital superintelligence. Unfortunately, that is increasingly probable}{Elon Musk \cite{Musk}}
+		%\epigraph{}{}
+	}
+\graphicspath{{./pics/}}
+
+\theoremstyle{plain}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{definition}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{example}[definition]{Example}
+
+\begin{document}
+	\maketitle
+
+	\setcounter{page}{-2}
+	\section*{Acknowledgement}
+	
+	I would like to thank S\'{e}bastien Loisel for helping me throughout the project, Nick Gilbert for offering his two cents during the viva, Matt and Naomi for proofreading, Steve Mowbray for IT help, my friends and family for support, and whatever gods replied to my pleas --- in my most insane moments, I must have prayed to all of them.
+	\thispagestyle{empty}\newpage
+	\section*{Abstract}
+	
+	%This paper describes, in a mathematical manner, the inner workings of Feedforward Neural Networks in general --- and of Deep Convolutional Neural Networks in particular. A special emphasis is put on the equations that govern the system, not only on the output generation, but also on the optimisation system.\\\\
+	%Given that information, a Deep Convolutional Neural Network is then constructed in Torch to recognise categories in a large set of small images.
+	A neural network (NN) is a type of artificial intelligence software modeled after the human brain. Neural networks can be trained for various tasks, e.g. to distinguish between images of cats and dogs. A neural network consists of interconnected neurons. Neurons that receive the input image are said to be the ``input layer''. Conversely, neurons that output the classification ``cat'' or ``dog'' are said to be the ``output layer''. Deep neural networks also feature many more ``hidden layers'', neurons whose inputs and outputs are other neurons. A neural network is said to be convolutional if some of its layers consist of convolution of other layers. The motivation is that a convolutional layer has greatly fewer weights to train than a fully connected layer; moreover, convolutions are known to be powerful image recognition tools. In this thesis, we describe the mathematical structure of deep convolutional neural networks. We also explain how variants of the gradient descent can be used to train deep convolutional neural networks, and how the gradient of the ``loss function'' used in training can be efficiently computed using the backward mode of automatic differentiation; this is often called ``backpropagation'' in the neural network literature. We test these techniques on the CIFAR-10 dataset of images, using the Torch environment and the Lua programming language.
+	\vfill
+	{\small \textbf{Keywords}: \textit{mathematics, Neural Networks, multilayered Perceptron, Max-pooling, Deep Learning, Convolutions, Automatic Differentiation, backpropagation, Gradient Descent, Stochastic Gradient Descent, Nesterov Acccelerated Gradient, Matlab, Lua, Torch.}}
+	
+	\thispagestyle{empty}
+	\newpage
+	\tableofcontents
+	\thispagestyle{empty}
+	\newpage
+	
+	
+	\section{Introduction}\label{Intro}
+	
+		%\textbf{Intention}.
+		%This paper explains how to build a Deep Convolutional Neural Network capable of distinguishing a number of images in sifferent categories. This is simply one example of the power of \textit{deep learning}, a feature of machine learning that has lately become very useful to detect patterns in images and sounds. In deep learning, a Neural Network is trained to learn and distinguish by itself how some piece of information can belong to a specific category, with the programmer having no direct action on the process of learning itself, only in the dataset and the architecture of the network.\\\\
+		%\textbf{Sources}. The network is trained on the \textit{CIFAR dataset} \cite{Krizhevsky}, which contains $32\times32$-pixels images displaying different categories: \texttt{\{'airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'\}}.
+		%The network is written in Torch, an extension for Lua, which is a lightweight multi-paradigm programming language designed by Roberto Ierusalimschy, Waldemar Celes and Luiz H. de Figueiredo, primarily for embedded systems and clients. Most of the code was taken and modified from a demo on face recognition programmed by Clement Farabet and Eugenio Culurciello \cite{torchCodeSource}.\\\\
+		%\textbf{Contents}.
+		%\begin{description}
+			%\item [Section \ref{Bground}] Inspiration for Neural Networks and a bit of history.
+			%\item [Section \ref{NeurNets}] Mathematical definition of Neural Networks, and explanations of various types of layers, such as cnvolutional and Max pooling.
+			%\item [Section \ref{Convols}] Explaining how convolutions can be used for detecting patterns in figures, with Matlab examples.
+			%\item [Section \ref{AutoDiff}] Step-by-step guide for the process of Automatic Differentiation, explaning how it can be used to compute numerically the gradient of a function with minimal computational cost.
+			%\item [Section \ref{GradDesc}] Description of Gradient Descent and its improved versions, applied on the loss function to minimise it using the gradient calculated on Section \ref{AutoDiff}.
+			%\item [Section \ref{Exper}] Numerical experiments on the CIFAR dataset, results and comparison to other methods.
+			%\item [Appendix \ref{xorMLP}] Encoding the exclusive-or (XOR) function on a multilayered feedforward Neural Network.
+			%\item [Appendix \ref{MatlabCode}] Matlab code for Automatic Differentiation and the various forms of Gradient Descent.
+			%\item [Appendix \ref{luaCode}] Lua code to load data and construct, train and test the network.
+		%\end{description}
+		McCulloch and Pitts \cite{McCulloch} proposed to model neurons as receiving a real input $x$ and producing an output of either $0$ or $1$ depending on whether $x$ is smaller or larger than some threshold; this is called Threshold Logic; in mathematics we would call this the Heaviside step function. They then proposed to model a brain using a network of these units, where the input of one Threshold Logic Unit (TLU) is a linear combination of the outputs of other TLUs. Hebb\cite{Hebb} had proposed that brains should learn by modifying connections between neurons, i.e. by adjusting the {\bf weights} in the linear combinations between the TLUs. A first algorithm along those lines is Rosenblatt's perceptron in the 1950s \cite{Rosenblatt}. The perceptron consisted of one layer of input neurons and one layer of output neurons.
+		
+		One flaw of TLUs is that the Heaviside step function is non-differentiable, implying that the function $\Phi(x)$ which maps the input of a neural network to its output, is non-differentiable. Thus, an improvement is to replace the Heaviside function with a smooth function such as $\operatorname{arctanh} x$. 
+		
+		The weights of the various connections in a neural network cannot be known in advance. Instead, one {\bf trains} a neural network to recognize patterns in data. For example, one can take a training set $T$ of 100 images of cats and dogs and label them manually. Then, one optimizes the weights in a neural network so that it produces the correct labels ``cat'' or ``dog'' when provided these 100 test images. In order to {\bf test} or {\bf validate} a neural network, one uses a set $V$ of images of cats and dogs, distinct from $T$. The {\bf effectiveness} of the neural network is the number of correctly labeled images from the validation set $V$.
+		
+		The labels for cat-and-dog images are two-dimensional vectors, with $[1,0]$ indicating a cat image, and $[0,1]$ indicating a dog image. Because we use a nonlinearity such as $\operatorname{arctanh} x$ for the neurons, the outputs of the neural network will not usually be boolean, but instead a cat image might product the output $[0.92,0.15]$ and a dog image might produce the output $[0.06,0.76]$: the largest entry indicates the classification produced by the neural network. The {\bf loss function} is defined as
+		$$E = \sum_{i=1}^m \|z^{(i)} - \Phi(x^{(i)})\|_2^2.$$
+		Here, $m$ is the cardinality of the training set $T = \{x^{(1)},\ldots,x^{(m)}\}$, each $z^{(i)}$ is the (boolean vector) label corresponding to the input image $x^{(i)}$, and $\Phi(x)$ is the output of the neural network given an image $x^{(i)}$, and $\|z\|_2^2 = \sum_i z_i^2$. Thus, to train a neural networks, one optimizes the weights of the connections between the neurons so that $E$ is as small as possible. This optimization is typically done using variants of the gradient descent algorithm.
+		
+		Because the perceptron has only two layers, it is unable to model many interesting functions; for example, the exclusive-or function (i.e. $(x,y) \to x+y \mod 2$) requires a minimum of three layers to model as a neural network. Clearly, human brains are able to compute such functions so in order to achieve higher level of ``intelligence'', we must use deep neural networks. However, such deep neural networks are more difficult to train, in part because it seems more difficult to compute the gradient of a deep loss function $E$ than that of a shallow one. To address this difficulty, Werbos \cite{Werbos} proposed an algorithm called ``backpropagation'', which we regard as a special case of ``automatic differentiation'', which allows one to efficiently compute the gradient of the loss function $E$ and hence train a deep neural network.
+		
+		
+		Wolfe \cite{Wolfe} made the following observation: 
+		\begin{quote}
+			\textit{There is a common misconception that calculating a function of $n$ variables and its gradient is about $(n + 1)$ times as expensive as just calculating the function. This will only be true if the gradient is evaluated by differencing function values or by some other emergency procedure. If care is taken in handling quantities, which are common to the function and its derivatives, the ratio is usually $1.5$, not $(n + 1)$, whether the quantities are defined explicitly or implicitly...}
+		\end{quote}
+		The ``reverse mode'' of automatic differentiation (see \cite{Griewank} and references therein) essentially achieves Wolfe's objective, and is based on the following observation. Any computer program can be regarded as a sequence of elementary operations that operate on computer memory, consuming one or two memory locations and updating a third memory location. If the computer memory is stored in a vector $F \in \mathbb{R}^n$, then we can say that any computer program is of the form $\Phi(F) = \Phi_n(\ldots(\Phi_1(F)\ldots)$, where each $\Phi_i : \mathbb{R}^n \mapsto \mathbb{R}^n$ is an elementary operation that ``reads'' only one or two memory locations and updates a third memory location, leaving all other memory locations untouched. As a result, by the chain rule, $\Phi' = \Phi_n' \cdot \ldots \cdot \Phi_1'$, where $\Phi_i'$ denotes the Jacobian of $\Phi_i$. If we wish to get the gradient $g$ of memory location $F_n$ with respect to all of memory $F$, we must then compute
+		$$
+		g = (\ldots(e_n^T
+		\Phi_n') \ldots \Phi_1'),
+		$$
+		where $e_n = [0,\ldots,0,1]^T \in \mathbb{R}^n$. By bracketing this expression from left-to-right, we are consuming the Jacobians in the reverse order in which they are initially produced, which is why this is called the reverse mode of automatic differentiation. Since each $\Phi_i'$ is nearly the identity, with only a few nontrivial off-diagonal entries (corresponding to the one or two input memory locations and the third output memory location), the vector-matrix product $v := v^T\Phi_i'$ can be implemented ``in-place'' or ``destructively'' in such a way that it requires $O(1)$ FLOPS to compute, without having to allocate and initialize a whole-new $n$-dimensional vector. Thus, computing $g$ requires $O(n)$ FLOPS, confirming Wolfe's observation.
+		
+		A standard test dataset for deep convolutional neural networks is CIFAR-10 \cite{Krizhevsky}, which consists of 60000 32x32 colour images in 10 classes, with 6000 images per class. There are 50000 training images and 10000 test images. Our main numerical result is to train a neural network for this CIFAR-10 dataset that achieves an effectiveness above 60\%, much better than chance, which would be 10\%.
+		
+		Implementing neural networks in software is difficult to do from scratch, especially if one wants to use multiple cores and GPUs that are often available in modern computers. We used the Torch framework \cite{Collobert}, which is a MATLAB-like environment that is optimized for machine learning, based on the Lua programming language \cite{Miller}.
+		
+		This thesis is organized as follows.  In Section 2, we briefly outline the biology and history surrounding neural networks. In section 3, we give the mathematical definition of neural networks and describe various types of layers, such as convolutional and max pooling layers. In section 4, we explain how convolutions can be used for detecting patterns in figures, with MATLAB examples. In section 5, we describe in detail how the reverse mode of automatic differentiation works, and we provide a MATLAB implementation. In section 6, we discuss the gradient descent and its variants and we compare the performance of the various algorithms. In section 7, we describe our numerical experiments on the CIFAR-10 dataset, including our deep convolutional neural network which achieves an effectiveness above 60\%. We conclude in section 8. The appendices contain some complementary material. In Appendix A, we give a 3-layer neural network for the exclusive-or function. In appendix B, we give MATLAB codes for automatic differentiation, gradient descent and its variants. In appendix C, we provide the Lua codes for our deep convolutional neural network described in section 7.					
+		
+	\section{Background}\label{Bground}
+		Aristotle \cite{Gross} said: 
+		\begin{quote}
+			\textit{Of course, the brain is not responsible for any of the sensations at all. The correct view [is] that the seat and source of sensation is the region of the heart.}  
+		\end{quote}
+		As it is known nowadays, the brain is the central processor of the human body, source of all rational and preemptive thought. Its structure is based on a single cell, the neuron, which connects to others of its kind forming special clusters that activate when a specific pattern is recognised by the senses.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.25]{neuron.png}
+			\caption{A neuron \cite{Kriesel}}
+			\label{fig:neuron1}
+		\end{figure}
+		Thus, it is only logical that one of the areas of research in Artificial Intelligence would try to emulate a brain with a computer system by simulating neurons and their connections in a network. Neural Networks in general --- and Deep Learning in particular --- are among the most important tools for anyone who is interested in building a thinking machine.\\
+		
+		A bit of history on Neural Networks:
+		\begin{labeling}{Deep Learning}
+			\item[Early years]	The first models of Neural Networks trace as far back as 1943, nearly simultaneously with the history of programmable electronic computers \cite{Kriesel}. Warren McCulloch and Walter Pitts recreated such models showing that they were able to calculate almost every logic and arithmetic function.
+			
+			\item[Rise]	Neural Networks experimented a "golden age" during the fifties, mainly due to Minsy's neurocomputer, \textit{snark}, which was capable of adjusting its own weights automatically, as a primitive genetic algorithm. By the end of the fifties, Rosenbratt's \textit{perceptron}, which used a machine learning procedure called \textit{the delta rule}, was developed, and in 1960 \textit{ADALINE} (\textit{ADAptative LInear NEuron}), the first commonly used commercial Neural Network, was born.
+			
+			\item[Decline] 	However, the perceptron was shown not to be Turing complete in 1969 (see Section \ref{ffNNs} for more information), which led to the whole field being considered a dead end for the following 15 years.
+			
+			\item[Renaissance] It would not be until John Hopfield proposed in 1983 some solutions for the travelling salesman problem, using networks he called \textit{Hopfield Nets}, that Neural Netwrks started to be considered again as a possibility. Around this time, other fields of research in Artificial Intelligence experienced a kind of fatigue, due to a series of failures and unfulfilled hopes \cite{Kriesel}. Fortunately for those interested in Neural Networks, a generalization of the delta rule called \textit{backpropagation} (see more about this in Section \ref{AutoDiff}) was separately developed by a number of groups --- in fact, backpropagation had already been developed in 1974 by Paul Werbos, but for some reason it hadn't caught on. From then on, Neural Networks experiment a great boost, being used as one of the cornerstones of AI.
+			
+			\item[Deep Learning] The idea of using Deep Convolutional Neural Networks is not a recent one, but rather the possibility is. For old computers, deep learning was too costly in computational terms, the time it took to work too long, to be efficient. As an example, a network containing six fully connected layers could take two days to train \cite{Hinton}. It was the advance in hardware technology, the development of much more powerful computers, that made Deep Learning a reality, being able to accelerate training algorithms by orders of magnitude.
+		\end{labeling}
+
+	
+	\section{Neural Networks}\label{NeurNets}		
+		\subsection{Definition and examples}\label{NNdefs}
+		
+		\input{NNintro.tex}
+		
+		Some possible activation functions include:
+		\begin{enumerate}
+			\item Heaviside:
+				\[ f(x) := \begin{cases} 
+				0 & x \leq 0 \\
+				1 & x > 0  
+				\end{cases}
+				\]
+				\begin{figure}[H]
+					\centering
+					\includegraphics[scale=0.4]{heavisideActiv.jpg}
+					\caption{A Heaviside activation function.}
+					\label{fig:heavisideActiv}
+				\end{figure}
+			\item Rectified Linear Unit (ReLU):
+				\[ f(x) := \begin{cases} 
+				0 & x \leq 0 \\
+				x & x > 0 
+				\end{cases}
+				\]
+				\begin{figure}[H]
+					\centering
+					\includegraphics[scale=0.4]{ReLUactiv.jpg}
+					\caption{A ReLU activation function.}
+					\label{fig:ReLUActiv}
+				\end{figure}
+			\item Hyperbolic tangent:
+				$$
+					\tanh(x)=\frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}
+				$$
+				\begin{figure}[H]
+					\centering
+					\includegraphics[scale=0.4]{tanhActiv.jpg}
+					\caption{A hyperbolic tangent activation function.}
+					\label{fig:tanhActiv}
+				\end{figure}
+			\item Sigmoid:
+				$$
+					s(x)=\frac{1}{1+e^{-x}}
+				$$
+				\begin{figure}[H]
+					\centering
+					\includegraphics[scale=0.4]{sigmoidActiv.jpg}
+					\caption{A Sigmoid activation function.}
+					\label{fig:sigmoidActiv}
+				\end{figure}
+		\end{enumerate}
+		
+		\subsection{Feedforward Neural Networks}\label{ffNNs}
+	
+		Feedforward networks, also called \textbf{perceptrons}, are arranged in layers. The earliest examples simply contained a first layer of $n$ inputs and a layer of $m$ outputs. That means a block matrix of size $n+m$, such as:
+		$$
+		W = \begin{bmatrix}
+		0 \\
+		0 & 0 \\
+		0 & 0 & 0 \\
+		1 &-1 & 3 & 0 \\
+		1 &-1 & 3 & 0 & 0 \\
+		1 &-1 & 3 & 0 & 0 & 0 \\
+		\end{bmatrix}
+		\qquad
+		\theta = \begin{bmatrix}
+		0 \\ 0 \\ 0 \\ 1/2 \\ -1/2 \\ 3/2 \end{bmatrix}
+		$$
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.75]{perceptronBig.png}
+			\caption{A perceptron with the structure above represented.}
+			\label{fig:perceptronBig}
+		\end{figure}
+		There was,however, a major problem with the percetron structure, but some background is necessary to speak about it:
+		\begin{definition}
+			A \textbf{Boolean domain} $\mathbb{B}$ is a set with only two elements \{0,1\} (sometimes represented as \{false,true\}).
+		\end{definition}
+		\begin{definition}
+			Let $\mathbb{B}$ be a boolean domain. A \textbf{logic gate} is a binary operation in $\mathbb{B}$.
+		\end{definition}
+		There are $2^4$ logic gates. Some well-know ones are AND, OR and XOR:
+		\begin{center}
+			\begin{tabular}{|c c | c|} 
+				\hline
+				A & B & AND(A,B)\\ [0.5ex] 
+				\hline\hline
+				0 & 0 & 0 \\ 
+				\hline
+				0 & 1 & 0 \\
+				\hline
+				1 & 0 & 0 \\
+				\hline
+				1 & 1 & 1 \\ [1ex] 
+				\hline
+			\end{tabular}\quad
+			\begin{tabular}{|c c | c|} 
+				\hline
+				A & B & OR(A,B)\\ [0.5ex] 
+				\hline\hline
+				0 & 0 & 0 \\ 
+				\hline
+				0 & 1 & 1 \\
+				\hline
+				1 & 0 & 1 \\
+				\hline
+				1 & 1 & 1 \\ [1ex] 
+				\hline
+			\end{tabular}\quad
+			\begin{tabular}{|c c | c|} 
+				\hline
+				A & B & XOR(A,B)\\ [0.5ex] 
+				\hline\hline
+				0 & 0 & 0 \\ 
+				\hline
+				0 & 1 & 1 \\
+				\hline
+				1 & 0 & 1 \\
+				\hline
+				1 & 1 & 0 \\ [1ex] 
+				\hline
+			\end{tabular}
+		\end{center}
+		\begin{definition}
+			A system is \textbf{Turing complete} if it can encode all logic gates.
+		\end{definition}
+		Turing completeness is very important in programming. If a system is Turing complete, its computational capacity is the same as any other Turing complete system \cite{Millican}. Essentially this means that, given enough time, a Turing complete system can do anything  the most powerful computer imaginable could do.\\
+		
+		How is this related to the topic at hand? \textit{A single-layer perceptron cannot simulate a XOR gate} \cite{Yanling}. Therefore, it is not Turing complete and, no matter how much research, there are things that a perceptron will never be able to do.\\
+		
+		Just for comparison, here are some examples of things that are Turing complete. \textit{All of these are (disregarding time) more effective than a single-layer perceptron}:
+		\begin{itemize}
+			\item Microsoft Excel.
+			\item Conway's game of life \cite{Conway}.
+			\item Minecraft.
+			\item The card game \textit{Magic: the gathering} \cite{Churchill}.
+			\item Spore-splitting slime mold (funghi) \cite{TuringSlime}.
+		\end{itemize}
+		
+		\subsection{Multilayered Perceptron} \label{MLPs}
+		Multilayered Perceptrons (MLPs for short) are feedforward networks constructed with one or more \textit{hidden layers} between the input and the output layers.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.75]{mlp.png}
+			\caption{A multilayered perceptron with a hidden layer.}
+			\label{fig:mlp1}
+		\end{figure}
+		Consider Figure \ref{fig:mlp1}. The equivalent matrices would be:
+		$$
+		W = \begin{bmatrix}
+		0 \\
+		0 & 0 \\
+		1 & 3 & 0 \\
+		2 & 4 & 0 & 0 \\
+		0 & 0 & 5 & 7 & 0 \\
+		0 & 0 & 6 & 8 & 0 & 0 \\
+		\end{bmatrix}
+		\qquad
+		\theta = \begin{bmatrix}
+		0 \\ 0 \\ 1 \\ 2 \\ 3\\ 4\end{bmatrix}
+		$$		
+		
+		A single hidden layer can solve the XOR problem easily. To see how (and to get a more detailed explanation on how a Neural Network works), please refer to Appendix \ref{xorMLP}.\\
+		
+		\subsection{Convolution layers}
+		
+		Ultimately, the goal in this paper is to construct a Neural Network that is capable of recognising patterns in an image. A \textbf{Convolution layer} uses a convolution as weights. A mathematical explanation of how convolutions work can be found in Section \ref{Convols}, here the explanations will keep to simple figures:
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.65]{convolution1.png}
+			\caption{A $5\times5$ convolution layer \cite{Nielsen}.}
+			\label{fig:convolution1}
+		\end{figure}
+		The weights from the left layer are defined by the $n \times m$ convolution pattern. This means that the spikes the convolution produces are reflected in the right layer. However, the convolution only works for one specific pattern, so we need to add more convolutions that will search for different patterns in the image.
+		
+		\subsection{Max-Pool layers}
+		
+		A max-pool layer divides the layer in $n\times m$ squares, taking every weight as $1$, every bias as $0$, and applying a specific activation function for every neuron:
+		$$
+			y_{ij}^{(k+1)} = max
+			\begin{pmatrix}
+				y_{i(n-1)+1,j(m-1)+1}^{(k)},	& \cdots	& y_{in,j(m-1)+1}^{(k)},	\\
+				\vdots							& \ddots	& \vdots					\\
+				y_{i(n-1)+1,jm}^{(k)},			& \cdots	& y_{in,jm}^{(k)}
+			\end{pmatrix}
+		$$
+		Where $y_{ij}^{(k)}$ is the neuron in position $(i,j)$ at layer $k$. The usual size is a max-pool $2\times2$.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.65]{maxpooling.png}
+			\caption{A visual representation of a $(2\times2)$ max-pool layer \cite{Nielsen}.}
+			\label{fig:maxpooling}
+		\end{figure}
+		These layers are useful after a convolution, where it suffices to know where the highest values in a layer are located (see Section \ref{matlabConvolutions} for an explanation of this), so the lower values are adding no extra information. Thus, a Max-Pool layer highly reduces the computational cost at practically no penalty.
+		
+		\subsection{Deep Learning}
+		
+		Suppose, for example, that the goal is to look for a face in an image. A face might be defined as "anything with two eyes, a nose and a mouth", thus creating three initial convolutions to detect those features. This separates the most obvious cases:
+	
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{aFace.png}
+				\caption{A face}
+				\label{fig:aFace}
+			\end{subfigure}%
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{notaFace.png}
+				\caption{Not a face}
+				\label{fig:notaFace}
+			\end{subfigure}
+			\caption{A simple comparison \cite{OnePunchMan}.}
+			\label{fig:faceAndNoFace}
+		\end{figure}
+		However, the problem is not so simple. What happens if a feature is partially obscured? What if we find two eyes, a nose, and a mouth, but they are in a strange order?
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{apartialFace.png}
+				\caption{Only one eye: a false negative}
+				\label{fig:apartialFace}
+			\end{subfigure}%
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{maybeaFace.png}
+				\caption{All the features in a weird order: a false positive.}
+				\label{fig:maybeaFace}
+			\end{subfigure}
+			\caption{Wrong outputs \cite{OnePunchMan}(edited).}
+			\label{fig:difficultFace}
+		\end{figure}
+		This is the basis for \textbf{deep learning}: it is not enough to find some features, the algorithm needs to make sure that the features are correctly arranged, even if not all of them show up. To do this, a second layer of convolutions (and sometimes a third and a fourth one, as many as it takes) can be added. After the various convolutions, it is common to append normal layers which take weights from all the neurons and put them together. This is called a fully-connected layer. Sometimes several fully-connected layers are added together to reduce gradually the number of neurons.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.57]{convolutionalNeuralNetworkComplete.png}
+			\caption{A complete Deep Convolutional Neural Network \cite{Nielsen}.}
+			\label{fig:convolutionalNeuralNetworkComplete}
+		\end{figure}
+		This is all the "forward" part of the algorithm. The actual \textit{learning} part is the "backwards" part, and it consists of an \textbf{optimisation} process:
+		\begin{definition}
+			Let a feedforward Neural Network be represented by the function $\phi(x^{(k)})$, where $x^{(k)}$ is the set of weights $W$ and biases $\theta$ at time $k$. \textbf{Optimising} the network is finding a value $x^{(k)}$ that minimises the loss function $E(x^{(k)})$.
+		\end{definition}
+		As previously defined, $$E(x^{(k)}) = E(W,\theta) = \sum_{i=1}^m \|z^{(i)} - \Phi(y^{(i)})\|_2^2,$$ Where $z^{(i)}$ is the expected output of the training set at the $i$-th input, and $\Phi(y^{(i)})$ is the actual output.\\
+		The way to achieve this minimum is by following an iterative method. At iteration $k$, we do:
+		\begin{enumerate}
+			\item Calculate the output, and the specific value $E(x^{(k)})$ of the loss function.
+			\item Perform backward Automatic Differentiation (see Section \ref{AutoDiff}) on $E(x^{(k)})$ to get the gradient $\nabla E(x^{(k)})$.
+			\item Apply Gradient Descent (see Section \ref{GradDesc}) to get a closer value to the minimum. The result of gradient descent is then the value of ($W,\theta$) at iteration $k+1$, that is, $x^{(k+1)}$.
+		\end{enumerate}
+		In general, this system will reduce greatly the loss function, but there can be several problems:
+		\begin{itemize}
+			\item \textbf{Local minima}.\\A network might find a point in its loss function where the gradient is zero, but that is not a global minimum, as shown in the picture:\\
+			\begin{figure}[H]
+				\centering
+				\includegraphics[scale=0.5]{falseMinimum.jpg}
+				\caption{A polynomial function with a local minimum (on the left) and a global one (on the right)}
+				\label{fig:falseMinimum}
+			\end{figure}
+			In this case, the network becomes stale and cannot improve anymore, because it would mean going against the optimization process. Applying a random factor (see Section \ref{sgdDef}) usually works fine on this.
+			\item \textbf{Validation}.\\Sometimes a network finds some pattern in the training images that doesn't correspond with what the researcher wants it to learn, and gets perfect results without really finding useful differences. To ensure that a network is not cheating, a usual system is separating some part of the training set and using it for testing. This testing data has no influence in the learning process, so there is no fear of contamination. As Yudkowsy \cite{Yudkowsky} tells the story:
+			\begin{center}
+				{\small \it Once upon a time, the US Army wanted to use neural networks to automatically detect camouflaged enemy tanks. The researchers trained a neural net on 50 photos of camouflaged tanks in trees, and 50 photos of trees without tanks. Using standard techniques for supervised learning, the researchers trained the neural network to a weighting that correctly loaded the training set -- output "yes" for the 50 photos of camouflaged tanks, and output "no" for the 50 photos of forest. This did not ensure, or even imply, that new examples would be classified correctly. The neural network might have learned 100 special cases that would not generalize to any new problem. Wisely, the researchers had originally taken 200 photos, 100 photos of tanks and 100 photos of trees. They had used only 50 of each for the training set. The researchers ran the neural network on the remaining 100 photos, and without further training the neural network classified all remaining photos correctly. Success confirmed!}
+			\end{center}
+			\item \textbf{Confounding variables}. Sometimes the data is not taken adequately, or there are hidden factors in the images that disturb the computation. In these cases, any kind of problems may arise. Following with Yudkowsky's story, 
+			\begin{center}
+				{\small \it The researchers handed the finished work to the Pentagon, which soon handed it back, complaining that in their own tests the neural network did no better than chance at discriminating photos. It turned out that in the researchers' dataset, photos of camouflaged tanks had been taken on cloudy days, while photos of plain forest had been taken on sunny days. The neural network had learned to distinguish cloudy days from sunny days, instead of distinguishing camouflaged tanks from empty forest.}
+			\end{center}
+		\end{itemize}
+		
+
+	\section{Convolutions}\label{Convols}
+		\subsection{Definition and properties}
+		\theoremstyle{definition}
+		\begin{definition}
+			Let $f,g:\mathbb{R}\rightarrow\mathbb{R}$ be functions. Then, a \textbf{convolution} is a function $h:\mathbb{R}\rightarrow\mathbb{R}$ such that:
+			$$
+				h(x) := \int_{-\infty}^{\infty} f(u) g(x-u) du.
+			$$
+			Sometimes a convolution of $f$ and $g$ will be written $f \ast g$. $g$ is called the \textbf{signal} of he convolution.
+		\end{definition}
+		Convolutions are \cite{Bracewell}:
+		\begin{enumerate}
+			\item \textit{commutative}: by taking $v = x-u \rightarrow dv = -du$
+			$$
+				f \ast g = \int_{-\infty}^{\infty} f(u) g(x-u) du = 
+				\int_{\infty}^{-\infty} -f(x-v) g(v) dv =
+				\int_{-\infty}^{\infty} f(x-v) g(v) dv =
+				g \ast f,
+			$$
+			\item \textit{associative}, providing that the convolution integral exists, by changing integration order \cite{Nykamp}:
+			$$
+				(f \ast g) \ast h = 
+				\int_{-\infty}^{\infty} (\int_{-\infty}^{\infty} f(u) g(v-u) du) h(x-v) dv =
+				\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(u) g(v-u) h(x-v) du dv =
+				$$ $$
+				\int_{-\infty}^{\infty} f(u) (\int_{-\infty}^{\infty}  g(v-u) h(x-v) dv) du =
+				f \ast (g \ast h),
+			$$ 
+			and finally,
+			\item \textit{distributive} over addition:
+			$$
+				f \ast (g + h) =
+				\int_{-\infty}^{\infty} f(u) (g(x-u)+h(x-u)) du =
+				$$ $$
+				\int_{-\infty}^{\infty} f(u)g(x-u)du+\int_{-\infty}^{\infty}f(u)h(x-u) du =
+				f \ast g + f \ast h.
+			$$
+		\end{enumerate}
+		
+		\subsection{Discrete convolutions}
+		
+		As a computer cannot calculate a continuous amount of numbers, it will use the discrete version: given a sequence $f$ and a signal $g$, a \textbf{convolution} is
+		$$
+			h_n = \sum_{i \in \mathbb{Z}} f_i g_{n-i}
+		$$
+		Some examples \cite{Bracewell}:
+		\begin{itemize}
+			\item Convolving by the signal
+			$$
+			g := \frac{1}{n}[\overbrace{1,\cdots,1}^{n}]
+			$$
+			is equivalent to finding the average of every $n$ elements in the sequence.
+			
+			\item Convolving by the signal
+			$$
+			g := [-1,1]
+			$$
+			is equivalent to finding the first finite difference of the sequence.
+		\end{itemize}
+		%Notice that convolving two sequences together will result in a new sequence longer than the two previous, unless this is restricted somehow.
+		
+		\subsection{MATLAB examples} \label{matlabConvolutions}
+		
+		Convolutions can be easily computed in MATLAB via the command \texttt{conv(f,g)}. To start with, let's construct a random sequence of numbers, between 0 and 3.
+		\begin{verbatim}
+			rng(0,'twister');
+				% making sure that every instance of the code 
+				% produces the same pseudorandom sequence.
+			x = 0:0.025:1;			
+			g = max(0.6,max(max(sin(6*x),1.5*min(x,1.5-x)),0.8))-0.6;			
+				% a signal g with a weird pattern			
+			g(1) = 0;			
+			g(end) = 0;			
+			f = 0.01*randn(1,300);			
+			f(101:100+length(g)) = f(101:100+length(g)) + g;			
+				% include g in f so it will be obvious where the pattern of g is			
+			h = conv(f,fliplr(g));			
+				% flip g so the convolution works	
+			figure(1);			
+			plot(g);	
+			figure(2);			
+			hold on		
+			plot(h/5,'blue','LineWidth',2);			
+				% plot h/5 to plot f and h in a similar range,			
+				% the actual values don't matter (they will be normalised later anyway)			
+			plot([zeros(1,21) f zeros(1,20)],'red','LineWidth',2);			
+			legend('h/5','f')			
+			hold off
+		\end{verbatim}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{convG.jpg}
+			\caption{The signal \texttt{g}.}
+			\label{fig:seqG}
+		\end{figure}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{convFH.jpg}
+			\caption{Comparison of \texttt{f} and \texttt{h}.}
+			\label{fig:seqFH1}
+		\end{figure}
+		Here is where the power of convolutions can be seen: recalling Figure \ref{fig:seqG}, it forms a quite specific pattern. Now, looking at Figure \ref{fig:seqFH1}, it is possible to appreciate a correlation between peaks in \texttt{h} and the part of \texttt{f} that resembles the pattern (\textit{NOTE: usually, the pattern will not be that obvious, but here it is oversimplified for the sake of clarity}). A convolution shows those parts of a sequence where (the inverse of) some pattern is most clearly shown.
+		
+	\section{Automatic Differentiation}\label{AutoDiff}
+	The best way to minimise the loss function is to find a way of neutralising its derivative, thereby reaching a minimum. The goal is to start from the output of the network and calculate its gradient as a vector which will store the gradient of every layer. Ths gradient $g$, as a function of the weights and biases at time $k$, $\nabla E(x^{(k)})$, will be used later in section \ref{GradDesc} to optimise.
+		\subsection{Chain of operations}
+		
+		The function follows a pattern determined by a set of simple functions, for example, $(x+y)^2*(x-y)$ can be expressed as such:
+		
+		\begin{verbatim}
+			>> z=x+y;
+			>> p=x-y;
+			>> q=z*z;
+			>> r=z2*p;
+		\end{verbatim}
+		Noticeably, only one operation has been used every time, the reasoning for this is that the function can be divided in diferent time-steps, each one a single operation. This can be stored in memory as a function $F^{(n)}$, for time-step $n$. In total, there are six operations, one for every variable $x, y, z, p, q, r$.\\
+		Thus, the chain can be considered as such:
+		\begin{align}
+		F^{(1)} & = [x,0,0,0,0,0] = 						[F^{(1)}_1,F^{(1)}_2,F^{(1)}_3,F^{(1)}_4,F^{(1)}_5,F^{(1)}_6]^T\\
+		F^{(2)} & = [x,y,0,0,0,0] = 						[F^{(2)}_1,F^{(2)}_2,F^{(2)}_3,F^{(2)}_4,F^{(2)}_5,F^{(2)}_6]^T\\
+		F^{(3)} & = [x,y,z,0,0,0] = 						[F^{(3)}_1,F^{(3)}_2,F^{(3)}_3,F^{(3)}_4,F^{(3)}_5,F^{(3)}_6]^T = \\ & 
+		= [x,y,x+y,0,0,0] = [F^{(3)}_1,F^{(3)}_2,F^{(2)}_1+F^{(2)}_2,F^{(3)}_4,F^{(3)}_5,F^{(3)}_6]^T\\
+		F^{(4)} & = [x,y,z,p,0,0] = 						[F^{(4)}_1,F^{(4)}_2,F^{(4)}_3,F^{(4)}_4,F^{(4)}_5,F^{(4)}_6]^T = \\ & 
+		= [x,y,z,x-y,0,0] = [F^{(4)}_1,F^{(4)}_2,F^{(4)}_3,F^{(3)}_1-F^{(3)}_2,F^{(4)}_5,F^{(4)}_6]^T\\
+		F^{(5)} & = [x,y,z,p,q,0] = 						[F^{(5)}_1,F^{(5)}_2,F^{(5)}_3,F^{(5)}_4,F^{(5)}_5,F^{(5)}_6]^T = \\ & 
+		= [x,y,z,p,z^2,0] = 						[F^{(5)}_1,F^{(5)}_2,F^{(5)}_3,F^{(5)}_4,\big(F^{(4)}_3\big)^2,F^{(5)}_6]^T\\	
+		F^{(6)} & = [x,y,z,p,q,qp] = 						[F^{(6)}_1,F^{(6)}_2,F^{(6)}_3,F^{(6)}_4,F^{(6)}_5,F^{(6)}_6]^T = \\ & 
+		= [x,y,z,p,q,r] = 						[F^{(6)}_1,F^{(6)}_2,F^{(6)}_3,F^{(6)}_4,F^{(6)}_5,F^{(5)}_5 \times F^{(5)}_4]^T	
+		\end{align}
+		
+		\subsection{Backwards calculations} \label{BwdsCalcs}
+		
+		Let $\phi_k$ be the transition function from one memory state to the next, $F^{(k)}=\phi_k(F^{(k-1)})$, and $J^{(k)}$ be the Jacobian matrix of $\phi_k$. 
+		$$
+		J^{(k)}_{i,j}=\frac{\partial F^{(k)}_i}{\partial F^{(k)}_j}
+		$$
+		Then, the gradient $g$ is\\
+		$$
+			g = \bigg(\phi_k\Big(\phi_{k-1}\big(\cdots\phi_1(F^{(0)})\big)\Big)\bigg)'
+		$$
+		(where $F^{(0)}$ is the null vector). By the Chain Rule and abusing the notation,
+		$$
+			g = \Big(\big((\phi_{k}')\phi_{k-1}'\big)\cdots\Big)\phi_{1}'.
+		$$
+		Now, however, this gives the gradient for every element of the vector (that is, $[x,y,z,p,q]$) when only need the gradient for the last one $q$ is needed. Thus, this gradient vector is multiplied by $e_5$ to obtain the last element.
+		$$
+			g_k = \Big(\big((e_k\phi_{k}')\phi_{k-1}'\big)\cdots\Big)\phi_{1}'=e_k J_k \cdots J_1.
+		$$
+		This process of working backwards in time is why the algortihm is also called {\bf backpropagation}. The main problem, though, is that the computational cost is still too high, needing some way to work with the Jacobian matrices that doesn't involve so many calculations.
+		
+		\subsection{Simplifying the Jacobian matrix} \label{SimpleJacobMat}
+		
+		Now, this is where things get interesting. Every new element in the previous vector $[x,y,z,p,q,r]$ is created by operating two previous elements. This means that if the calculations advance in time through the sequence seen in section \ref{BwdsCalcs}, then at time-step 3 --- for example --- $z = x + y$ is a function $z(x,y)$. This is the Jacobian matrix at time $3$, $J_{3}$, of said function:
+		$$
+		J_{3}
+		=
+		\begin{pmatrix}
+			\frac{\partial F^{(3)}_1}{\partial F^{(3)}_1} &
+			\frac{\partial F^{(3)}_1}{\partial F^{(3)}_2} &
+			\frac{\partial F^{(3)}_1}{\partial F^{(3)}_3} \\
+			\frac{\partial F^{(3)}_2}{\partial F^{(3)}_1} &
+			\frac{\partial F^{(3)}_2}{\partial F^{(3)}_2} &
+			\frac{\partial F^{(3)}_2}{\partial F^{(3)}_3} \\
+			\frac{\partial F^{(3)}_3}{\partial F^{(3)}_1} &
+			\frac{\partial F^{(3)}_3}{\partial F^{(3)}_2} &
+			\frac{\partial F^{(3)}_3}{\partial F^{(3)}_3} \\
+		\end{pmatrix}=
+		\begin{pmatrix}
+		1 & 0 & 0 \\
+		0 & 1 & 0 \\
+		\frac{\partial (x+y)}{\partial x} & 
+		\frac{\partial (x+y)}{\partial y} & 
+		0 \\
+		\end{pmatrix}
+		=
+		\begin{pmatrix}
+		1 & 0 & 0 \\
+		0 & 1 & 0 \\
+		1 & 1 & 0 \\
+		\end{pmatrix}.
+		$$
+		Thus, the only row that sets this matrix apart from an identity is the one corresponding to the partial derivatives of $z$. Therefore,
+		
+		$$\begin{pmatrix}
+		g_{1} &
+		g_{2} &
+		g_{3} \\
+		\end{pmatrix}
+		*
+		J_{3}
+		=
+		\begin{pmatrix}
+			g_{1}+g_{3} \frac{\partial F^{(3)}_3}{\partial F^{(2)}_1} & 
+			g_{2}+g_{3} \frac{\partial F^{(3)}_3}{\partial F^{(2)}_2} &
+			0 \\
+		\end{pmatrix}.
+		$$
+		This can be extended for the general case. For every operation at time step $k$, where its value is a function $F^{(k)}_k\big(F^{(k-1)}_i,F^{(k-1)}_j\big)$ of the values in positions $i$ and $j$ of the previous time-step,
+		
+		\begin{enumerate}
+			\item $g_i$ is set to $g_{i}+g_{k} \frac{\partial F^{(k)}_k}{\partial F^{(k-1)}_i}$,
+			\item $g_j$ is set to $g_{j}+g_{k} \frac{\partial F^{(k)}_k}{\partial F^{(k-1)}_j}$, and finally,
+			\item $g_k$ is set to 0.
+		\end{enumerate}
+		
+		\subsection{Implementation}
+		
+		Every new operation is then transcribed in memory as an array of length four
+		\begin{verbatim}
+			[R op op1 op2]
+		\end{verbatim}
+		where \texttt{R} is the result of the operation, \texttt{op} is an operation code that we will specify later, and \texttt{op1} and \texttt{op2} are the locations of the two operands, if there is need for more than one. Hence, a matrix is created, each row being an operation in memory, or a time-step. Let's see:
+		
+		\begin{verbatim}
+		>> x = MyAutoDiff(3);		
+		>> y = MyAutoDiff(4);			
+		>> z=x+y;		
+		>> p=x-y;		
+		>> q=z*z;		
+		>> r=q*p;		
+		>> MyAutoDiff.getF()		
+		ans =
+		
+		  3    0     1     1	
+		  4    0     1     1	
+		  7    2     1     2	
+		 -1    3     1     2	
+		 49    1     3     3	
+		-49    1     5     4
+			
+		\end{verbatim}
+		Line by line, this last matrix means:
+		
+		\begin{enumerate}
+			
+			\item \texttt{R = 3, op = 0, op1 = 1, op2 =1}. \texttt{op = 0} means that the operation is initialisation. First variable is equal to 3, \texttt{op1} and \texttt{op2} don't matter, as there are no operands.
+			
+			\item \texttt{R = 4, op = 0, op1 = 1, op2 =1}. Being the second row, this means we are initialising the second variable. Otherwise, everything is the same.
+			
+			\item \texttt{R = 7, op = 2, op1 = 1, op2 =2}. This is the first row where we don't have to implement \texttt{R} manually, as we established that \texttt{z = x + y}. Now, \texttt{op = 2} indicates addition, whereas \texttt{op1 = 1} and \texttt{op2 = 2} mean that we are adding the values in the first and second memory slots (alternatively, the first and second time-steps).
+			
+			\item \texttt{R = -1, op = 3, op1 = 1, op2 =2}. As above, but this time substracting, \texttt{p = x - y}.
+			
+			\item \texttt{R = 49, op = 1, op1 = 3, op2 =3}. Targeting \texttt{z * z} means using the third memory slot twice.
+			
+			\item \texttt{R = -49, op = 1, op1 = 5, op2 =4}. As above, this time multiplying the fifth and fourth memory slots.
+			
+		\end{enumerate}
+		
+		\subsection{Running the program}
+		
+		\begin{verbatim}
+			>> w.gradient([x y])
+			
+			ans =
+			
+			35   -63
+			
+		\end{verbatim}
+		Compare this to the result of calculating the gradient directly:
+		$$
+		f(x,y) := (x+y)^2 (x-y) = x^3 - x y^2 + x^2 y - y^3
+		$$ $$
+		\frac{\partial f}{\partial x} (x,y) = 3x^2 - y^2 + 2 x y
+		$$ $$
+		\frac{\partial f}{\partial y} (x,y) = - 2 x y + x^2 - 3y^2
+		$$ $$
+		g(x,y)=
+		\begin{pmatrix}
+		\frac{\partial f}{\partial x} (x,y)\\
+		\frac{\partial f}{\partial y} (x,y)
+		\end{pmatrix} \Rightarrow g(3,4) =
+		\begin{pmatrix}
+		\frac{\partial f}{\partial x} (3,4)\\
+		\frac{\partial f}{\partial y} (3,4)
+		\end{pmatrix} =
+		\begin{pmatrix}
+		35\\
+		-63
+		\end{pmatrix}
+		$$	
+		How does the code work? As seen in line 33 of the Matlab Code in the Appendix \ref{MatlabCode}, the \texttt{gradient} method calls upon the operation matrix and updates a vector \texttt{G}, initialised as $e_k$ with a method that depends on the operation code \texttt{op}. As in section \ref{SimpleJacobMat}, we only need the partial derivatives of the operations. For example, if \texttt{op = 1} (multiplication), the code for the simplified Jacobian Matrix product is:
+		
+		\begin{verbatim}
+			G ( op1 ) = G ( op1 ) + Z2 * G ( k );
+			G ( op2 ) = G ( op2 ) + Z1 * G ( k );
+			G ( k ) = 0;
+		\end{verbatim}
+		
+	\section{Gradient Descent}\label{GradDesc}
+	Once the gradient has been computed, it's time to minimise the loss function at time $k$ --- defined in Section \ref{NNdefs}, $E(x^{(k)})$. Simply operating and finding the critical points is impossible, requiring an iterative method to progressively decrease the gradient. The goal is to find the fastest one, to optimise computational time. Gradient Descent methods apply some formula to the initial conditions to do precisely that: follow a path that will lead us to a minimum loss.\\
+		\subsection{Definition}
+		\begin{definition}[Gradient Descent]
+			Let $E(x): \mathbb{R}^n \to \mathbb{R}$ be a differentiable function and let $x^{(0)} \in \mathbb{R}^n$. Gradient Descent is an iterative method in which:
+			$$
+				x^{(k+1)} = x^{(k)} - \alpha_k \nabla E(x^{(k)}) \text{ for } k=0,1,2,\ldots
+			$$
+			where $\alpha_k$ is the {\bf step size} at iteration $k$. For example, take $\alpha_k = \rho^k \cdot \alpha_0$ with $\rho = 0.99$ and $\alpha_0 = 0.01$.
+		\end{definition}
+		Being an iterative method, Gradiend Descent needs some form of stopping criterion. For the examples below, it is a maximum number of iterations, the method stops at $x^{(k)}$ when $k = n_{max}$.
+		\begin{theorem}
+			Let $\nabla E(x^{(k)})$ be Lipschitz continuous with constant $L>0$. Then, Gradient Descent with fixed step size $\alpha < \frac{1}{L}$ satisfies:
+			$$
+			E(x^{(k)}) - E(x^{\ast}) \leq \frac{\|x^{(0)} - x^{\ast} \|^2}{2\alpha k}
+			$$
+			Where $x^{\ast}$ is a critical point of $E$.
+		\end{theorem}
+		Essentially, this means that the convergence rate is $\mathcal{O}(1/k)$. Proof of this theorem can be found in \cite{Gordon}.
+		
+		\subsection{Stochastic Gradient Descent}\label{sgdDef}
+		
+		In a training set, the amount $n$ of inputs can become too high to compute the gradient $\nabla E_i(x^{(k)})$ for every input at every iteration. Stochastic Gradient Descent rises as a solution to this.
+		\begin{definition}[Stochastic Gradient Descent]
+			Let $E_{i}(x): \mathbb{R}^n \to \mathbb{R}$ be a set of differentiable functions, $E(x) = \sum_{i=1}^n E_i(x)$ and $x^{(0)} \in \mathbb{R}^n$. Stochastic Gradient Descent (SGD) is an iterative process where, at every iteration $k$ we calculate:
+			$$
+			i(k) = \text{rand}(1,\dots,n),
+			$$ $$
+			x^{(k+1)} =  x^{(k)} - \alpha_k \nabla E_{i(k)}(x^{(k)})
+			$$
+		\end{definition}
+		Essentially, instead of calculating all the gradients for all the inputs, at every iteration one input is chosen at random (thus the \textit{stochastic} part) and its gradient computed \cite{Ruder}. SGD doesn't converge as uniformly as its vanilla version, but it compensates by being computationally much more efficient, especially in large training sets.\\
+		\begin{theorem}
+			Stochastic Gradient Descent converges \textit{almost surely}, that is,
+			$$
+			P(\lim_{k\to\infty}x^{(k)}=x^{(\ast)}) = 1.
+			$$
+		\end{theorem}
+		More specifically, SGD converges with rate $O(1/t)$, same as GD. Proof of these can be found in \cite{Nemirovski,Powell}.\\
+		
+		NOTE: for the particular example in section \ref{implementGD}, since the training set has only one input, using GD or SGD makes no difference whatsoever. In the Neural Network, however, it will make a very significative difference.
+		
+		\subsection{Optimization algorithms}\label{optimGD}
+		
+		There are ways to optimize Gradient Descent, no matter if vanilla or stochastic. The following two are explained for a single training set, so they follow the same implementation in both cases. To understand better these systems, it is useful to see Gradient Descent as if following a ball down a hill. The terrain is the loss function, and the lower the ball is, the better the efficiency.
+		
+		\textbf{Gradient Descent with momentum}\\
+		
+		SGD performs badly when we encounter a "ravine", that is, whenever the gradient doesn't point to the minimum, as seen in Figure \ref{fig:mapG}.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{mapG.jpg}
+			\caption{$f_1$ (see Appendix \ref{f1code}) seen on the plane $XY$ on equal values for a logarithmic scale of $Z$, GD in the ravine.}
+			\label{fig:mapG}
+		\end{figure}
+		Note how the method progresses towards the minumum very slowly. To accelerate this, turn to the physics of downhill movement, and appreciate that what the gradient influences is not the position of the ball, but its velocity \cite{Karpathy}. By starting with $v_0 = 0$ and updating it via the gradient (and a new parameter $\mu$ we call momentum), efficiency improves greatly, as shown in Figure \ref{fig:mapGM}.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{mapGM.jpg}
+			\caption{GD with and without momentum in the ravine of Figure \ref{fig:mapG}.}
+			\label{fig:mapGM}
+		\end{figure}
+		This is then the new gradient update:
+		$$
+		v^{(k+1)} = \mu v^{(k)} - \lambda \nabla E(x^{(k)})
+		$$ $$
+		x^{(k+1)} = x^{(k)} + v^{(k+1)}.
+		$$
+		
+		\textbf{Nesterov accelerated Gradient Descent}\\
+		
+		For the loss value to slow ts descent when it approaches a minimum --- to avoid gaining too much momentum and going over the critical point --- the algorithm can implement a rough idea of what the loss is going to be in the next iteration $x_{i+1}$. Then, it uses this approximation to calculate a sense of what the gradient is {\it going to be}; in a sense, an {\it implicit} method for the gradient:
+		$$
+		v^{(k+1)} = \mu v^{(k)} + \lambda \nabla E(x^{(k)} - \mu v^{(k)})
+		$$ $$
+		x^{(k+1)} = x^{(k)} - v^{(k+1)}.
+		$$
+		To implement this method more easily, take an auxiliar variable $x_{ahead}^{(k)} = x^{(k)} - \mu v^{(k)}$ and calculate the gradient of that \cite{Karpathy}.
+		\begin{theorem}[Nesterov 1983]
+			Let $f$ be a convex and $\beta$-smooth function, then Nesterov's Accelerated Gradient Descent satisfies:
+			$$
+			f(y_t) - f(x^\ast) \leq \frac{2\beta \lVert x_1 - x^\ast \rVert^2}{t^2}.
+			$$
+			Where $f(y_t)$ is the output at time $t$, $f(x^\ast)$ is a local minimum, and $x_1$ is the initial input.
+		\end{theorem}
+		Proof can be found in the paper by Amir Beck and Marc Teboulle \cite{Beck}.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{mapGMN.jpg}
+			\caption{Comparison of all methods in the ravine of Figure \ref{fig:mapG}.}
+			\label{fig:mapGMN}
+		\end{figure}
+		This is the code we used for previous figures \ref{fig:mapG}, \ref{fig:mapGM} and \ref{fig:mapGMN}.
+		\begin{verbatim}
+		z = [-0.5 0.9];
+		xs = -1:0.05:1;
+		ys = repmat(xs',1,length(xs));
+		xs = repmat(xs,size(ys,1),1);
+		f = @(x,y) exp(x.*x.*x.*x.*y.*y).*(x.*x.*x.*x+y.*y);
+		lrate = 0.01;
+		nmax = 500;
+		mu = 0.9;
+		
+		z_gd = GD(z,lrate,nmax);
+		fig1 = figure(1);
+		set(fig1, 'Units', 'Normalized', 'OuterPosition', [0 0 0.5 0.5]);
+		hold on
+		plot(z_gd(1,:),z_gd(2,:),'-r.','LineWidth',2);
+		contour(xs,ys,log10(f(xs,ys)));
+		legend('Gradient Descent')
+		hold off
+		
+		z_mag = MAG(z,mu,lrate,nmax);
+		fig2 = figure(2);
+		set(fig2, 'Units', 'Normalized', 'OuterPosition', [0 0 0.5 0.5]);
+		hold on
+		plot(z_gd(1,:),z_gd(2,:),'-r.','LineWidth',2);
+		plot(z_mag(1,:),z_mag(2,:),'-b.','LineWidth',2);
+		contour(xs,ys,log10(f(xs,ys)));
+		legend('Gradient Descent','Momentum Accelerated')
+		hold off
+		
+		z_nag = NAG(z,mu,lrate,nmax);
+		fig3 = figure(3);
+		set(fig3, 'Units', 'Normalized', 'OuterPosition', [0 0 0.5 0.5]);
+		hold on
+		plot(z_gd(1,:),z_gd(2,:),'-r.','LineWidth',2);
+		plot(z_mag(1,:),z_mag(2,:),'-b.','LineWidth',2);
+		plot(z_nag(1,:),z_nag(2,:),'-g.','LineWidth',2);
+		contour(xs,ys,log10(f(xs,ys)));
+		legend('Gradient Descent','Momentum Accelerated','Nesterov Accelerated')
+		hold off
+		\end{verbatim}
+		
+		\subsection{Comparison of speed}\label{implementGD}
+		\begin{verbatim}
+		init = [0.9 0.5];
+		mu = 0.9;
+		eta = 0.001;
+		nmax = 1200;
+		t = [0:1:nmax-1];
+		nag = NAG(init,mu,eta,nmax);
+		gd = GD(init,eta,nmax);
+		% see functions NAG and GD for more information
+		nag = sum(nag.^2);
+		gd = sum(gd.^2);
+		% euclidean norm of every point, to plot in just 2d
+		hold on
+		plot(t,gd,'-r')
+		plot(t,nag,'-b')
+		xlabel('time')
+		legend('Gradient Descent','Nesterov Gradient')
+		set(gca,'YScale','log')
+		hold off
+		\end{verbatim}
+		Code for Stochastic Gradient Descent can be found in Appendix \ref{sgdCode}, and code for the Nesterov Accelerated Gradient is in Appendix \ref{nagCode}.	The output of this is Figure \ref{fig:SGDandNAG}. In it, we can appreciate how $(x,y) \rightarrow (0,0)$ (the figure shows $\|E(x^{(k)}) - E(x^{\ast})\|^2$ to fit it easily in a two-dimensional plot).
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{NAG_and_SGD.jpg}
+			\caption{SGD and NAG finding a minimum on $f_1$.}
+			\label{fig:SGDandNAG}
+		\end{figure}
+		As we can see, Nesterov Accelerated Gradient converges much, much faster than SGD. Let's see this figure again, on a logarithmic scale:
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{NAG_and_SGD_logscale.jpg}
+			\caption{Same as Figure \ref{fig:SGDandNAG}, but on a logarithmic scale.}
+			\label{fig:SGDandNAGlog}
+		\end{figure}
+		Momentum-less GD has a convergence rate of around $\frac{1}{t}$, whereas NAG converges with a speed of about $\frac{1}{t^2}$, as was proved in sections \ref{sgdDef} and \ref{optimGD}.
+	\newpage
+	\section{Programming and results} \label{Exper}
+		
+		The program was compiled on Eclipse, an integrated development enviroment (IDE) that provides a source code editor and debugger for several programming languages. Of those languages, the one chosen was Lua, a lightweight scripting language with a specific extension called Torch that supports easy implementation of neural networks via the package \texttt{nn}. In Torch, a feedforward neural network can be created by the simple command \texttt{local CNN = nn.Sequential()} and then added layers via \texttt{CNN:add(nn.SpatialConvolution)}. Torch is used by several companies in their projects, including Google's DeepMind, the Facebook AI Research Group and IBM.\\
+		The code was modified from a tutorial by Clement Farabet and Eugenio Culurciello \cite{torchCodeSource}, and divided in six different files. The first one, \texttt{opt.lua} (Appendix \ref{luaOpt}) simply specifies the settings for the other files, and requires no further explanation. Let's see the remaining five:
+		\begin{itemize}
+			\item \texttt{loading.lua} (Appendix \ref{luaData}).\\
+			Here we load the dataset into memory. The dataset chosen for this experiment was CIFAR-10 \cite{Krizhevsky}, a set consisting of $60,000$ images of size $32\times32$ pixels (a pixel is the smallest unit of color in an image). Each of the images is assigned by the dataset to an output belonging to one of ten categories: \texttt{\{'airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'\}}. Every pixel in the image is treated as a value, determining its color. Therefore, the images are loaded into tensors (three-dimensional matrices) of size $3\times32\times32$, as there are three color values --- red, green and blue --- for every pixel, which can be mixed to make up all the other colors. The color values are called \textbf{channels}.
+			 \begin{figure}[H]
+			 	\centering
+			 	\includegraphics[scale=0.67]{S111_006_00000010.png}
+			 	\caption{A sample of images belonging to each category}
+			 	\label{fig:S111anger}
+			 \end{figure}
+			After loading the images into memory and dividing them into two disjoint subsets (more on that later) we need to \textbf{preprocess} the images. Preprocessing is a common step after loading data, which takes the tensors we loaded the images into and normalises its values, setting mean zero and standard deviation 1. Preprocessing removes noise and makes computations faster. We do this globally and for every color channel.\\
+			After preprocessing, the file returns the training and testing datasets, the categories and the mean and standard deviation values.
+			
+			\item \texttt{model.lua} (Appendix \ref{luaModel}).\\
+			This file determines the \textbf{architecture} of the network: the type, style and disposition of layers that will compose it. Defining the architecture is an essential part of building a network, because it is what sets it apart from other networks of the same type and determines its chances of success. Choosing which architecture to use is mostly guesswork, but as a rule of thumb, it is better to pick small and multiple convolutions, adding extra layers. This way computational cost is reduced without decreasing effectiveness. Here's the architecture chosen for this problem:
+			\begin{center}
+				\begin{tabular}{||c|c c||}
+					\hline
+					Weights & Activation function & Size \\
+					$5\times5$ Convolution & ReLU & $3\times32\times32 \to 64\times28\times28$ \\
+					$2\times2$ Max Pooling &  & $64\times28\times28 \to 64\times14\times14$ \\
+					$3\times3$ Convolution & ReLU & $64\times14\times14 \to 96\times12\times12$ \\
+					$2\times2$ Max Pooling &  & $64\times12\times12 \to 64\times6\times6$ \\
+					$3\times3$ Convolution & ReLU & $96\times6\times6 \to 64\times4\times4$ \\
+					$2\times2$ Max Pooling &  & $64\times4\times4 \to 64\times2\times2$ \\
+					\hline
+					Reshaping & & $64\times2\times2 \to 256$ \\
+					Fully connected & & $256 \to 10$ \\
+					\hline
+				\end{tabular}
+			\end{center}
+			
+			\item \texttt{train.lua} (Appendix \ref{luaTrain}) and \texttt{test.lua} (Appendix \ref{luaTest}).\\
+			The file \texttt{loading.lua} divided the dataset into two disjoint subsets. The reason for this is that, to ensure \textbf{validation} of data, we need a \textbf{training} set and a \textbf{testing} set: 
+			\begin{itemize}
+				\item \texttt{train.lua} calls for the training set and, on every iteration --- called epochs --- runs through it adapting the weights and biases $(W,\theta)$ to find a minimum of the loss function. As we can see in Figure \ref{fig:epoch82train}, training usually achieves $100\%$ efficiency, but that doesn't necessarily mean that the network will classify all images perfectly --- it could have learned to recognise a pattern specific for the training set.
+				\item \texttt{test.lua} applies, at every epoch, $(W,\theta)$ on the testing set. This way we obtain a more representative idea of the network's efficiency, as it can be seen in Figure \ref{fig:epoch82test}. As the testing set has no influence in the learning process, it cannot happen that $(W,\theta)$ are specific for it.
+			\end{itemize}
+			
+			\item \texttt{run.lua} (Appendix \ref{luaRun}).
+			This is the main file of the program. It calls for the data to be loaded and the model to be constructed, then trains and tests the network on every epoch, up to a maximum determined by \texttt{opt.lua}
+		\end{itemize}
+		\newpage
+		\textbf{Results}:\\
+		This network has achieved an efficiency of $60,03\%$. This is the output of the code:
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{epoch82train.png}
+			\caption{Training output.}
+			\label{fig:epoch82train}
+		\end{figure}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{epoch82test.png}
+			\caption{Testing output.}
+			\label{fig:epoch82test}
+		\end{figure}
+		%The difference between efectivity in training and testing data is clearly recognisable here: the network has learned a system that is perfect for the training set, but not so much for reality. Still, compared to pure guesswork ($10\%$ effectiveness) is a really useful system. %Other, more complex systems have achieved different results:\\
+		
+%		\begin{tabular}{c c | c}
+%			Author & System & Effectiveness \\
+%			\hline
+%			Clevert et al. \cite{Clevert} & Exponential Linear Units & $75.72\%$ \\
+%			Xu \cite{Xu} & Multi-Loss Regularized DNNs & $68.53\%$ \\
+%			Liang \cite{Liang} & Recurrent CNNs & $68.25\%$ \\
+%			Lee et al. \cite{Lee} & Deeply Supervised Nets & $65.43\%$ \\
+%			Goodfellow et al. \cite{Goodfellow} & Maxout Networks & $61.4%3\%$ \\
+%		\end{tabular}
+		%Problems encountered:
+		%\begin{itemize}
+			%\item The computational cost of the network was very high, and there was no possibility of training it many times.
+			%\item The dataset was not homogeneous --- there were too many samples of some emotions, compared to others. This difficulted the learning process, as it conducted to false minima when the network just assumed that all emotions were of two particular kinds.
+		%\end{itemize}
+	
+	\section{Conclusion} \label{Conclusion}
+		%As it has been shown, the internal workings of a Neural Network look very complicated from the outside, but with the correct application of Algebra they can be easily explained and understood. A special emphasis has been adopted on the optimisation process of the method, to show that a system which should be very costly and slow can be greatly improved with the correct applications of mathematics. The greatest difficulty is then the architecture of a Neural Network, which is still mostly guesswork. 
+%As shown here, this particular network performs best when given an architecture consisting of \textbf{[WORK IN PROGRESS]}.
+%\\\\
+		%Deep Learning is an important tool in the developing of Artificial Intelligence, as recent research indicates. Adapted and improved Deep Convolutional Neural Networks can be used to detect patterns on almost any facet of life, making them a very useful tool to predict anything: from traffic danger for a self-driving car to fluctuations in the stock Market for a company.\\\\
+		Neural networks play an increasingly important role in our lives, with applications ranging from optical character recognition to stock market prediction. Deep convolutional neural networks are especially good at image recognition tasks. We have reviewed the mathematical theory behind neural networks and described how neural networks can efficiently be trained using variants of the gradient descent algorithm, and computing the gradient efficiently using backward differentiation (which is often called backpropagation in the neural network literature). We have implemented our algorithms in MATLAB and in Lua, using the Torch machine learning environment. Our deep convolutional neural network is able to classify the CIFAR-10 test images with an accuracy above 60\%, which is much better than chance, which would be 10\%.\\
+		%Any researcher that pursues progress in the field of Artificial Intelligence would do well in improving their knowledge of the underlying mathematical principles behind these new technologies, even if only to have a general idea of their capacities and limitations. If the reader feels that now they understand better the algebra behind Deep Convolutional Neural Networks, then this paper has achieved its intended purpose.
+	\section*{}	\label{References}
+	\newpage
+	\bibliography{references}{}
+	\bibliographystyle{plain}
+	
+
+	\appendix
+	\newpage
+	\addappheadtotoc
+	\section{An MLP solution for the XOR problem} \label{xorMLP}
+	Consider the following network architecture:
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.75]{xorMLP.png}
+		\caption{One possible architecture for solving the XOR problem.}
+		\label{fig:xorMLP1}
+	\end{figure}
+	This network represents a function $f(A,B) = F$, described in Section \ref{ffNNs}. The input is $(A,B)$, the output is $F$, and let's call the neurons in the hidden layer $C$ and $D$. The activation function is a Heaviside (0,1) for every neuron. The matrix of weights and vector of biases are:
+	$$
+	W = \begin{bmatrix}
+	0 & 0 & 0 & 0 & 0 \\
+	0 & 0 & 0 & 0 & 0 \\
+	1 & 1 & 0 & 0 & 0 \\
+	0 & 0 & 0 & 0 & 0 \\
+	0 & 0 & 1 &-1 & 0
+	\end{bmatrix}
+	\qquad
+	\theta = \begin{bmatrix}
+	0 \\ 0 \\ 1/2 \\ 3/2 \\ -1/2 \end{bmatrix}
+	$$
+	\begin{align}
+	y_1 & = f(0+0)+x_1 = x_1 \\
+	y_2 & = f(0+0)+x_2 = x_2 \\
+	y_3 & = f(y_1+y_2-0.5) \\
+	y_4 & = f(y_1+y_2-1.5) \\
+	y_5 & = f(y_3-y_4-0.5)
+	\end{align}
+	$$
+	\Phi(x) = Ry = 
+	y_5=
+	f(f(x_1+x_2-0.5)-f(x_1+x_2-1.5)-0.5)
+	$$
+	\begin{enumerate}
+		\item $\Phi(0,0) = f(f(0+0-0.5)-f(0+0-1.5)-0.5) = f(0-0-0.5) = 0$
+		\item $\Phi(0,1) = f(f(1+0-0.5)-f(1+0-1.5)-0.5) = f(1-0-0.5) = 1$
+		\item $\Phi(1,0) = f(f(0+1-0.5)-f(0+1-1.5)-0.5) = f(1-0-0.5) = 1$
+		\item $\Phi(1,1) = f(f(1+1-0.5)-f(1+1-1.5)-0.5) = f(1-1-0.5) = 0$
+	\end{enumerate}
+	As an aside note, $A,B\to C$ form an OR gate, $A,B\to D$ form an AND gate --- \textit{both as single-layer perceptrons!} ---, and thus, by substracting (notice the weights towards F) and AND gate from an OR gate, the network simulates the XOR gate. These logic gates operations have been well studied and, funnily enough, it's only necessary to be able to implement an OR and both NOT gates for the system to be Turing complete \cite{Millican}.
+	
+	\newpage
+	\section{Matlab Code} \label{MatlabCode}
+	\lstset{style=matlabStyle}
+		\subsection{$f_1$ function} \label{f1code}
+		\lstinputlisting[caption=Matlab code for $f_1: e^{x^2y^4}(x^2+y^4)$]{f1.m}
+		\subsection{Automatic Differentiation} \label{AutoDiffCode}
+		\lstinputlisting[caption=Matlab code for Automatic Differentiation]{MyAutoDiff.m}
+		\subsection{Gradient Descent} \label{sgdCode}
+		\lstinputlisting[caption=Matlab code for Gradient Descent on $f_1$.]{SGD.m}
+		\subsection{Nesterov's Accelerated Gradient} \label{nagCode}
+		\lstinputlisting[caption=Matlab code for NAG on $f_1$.]{NAG.m}
+		\newpage
+	\section{Lua Code} \label{luaCode}
+	\lstset{style=luaStyle}
+	\lstset{inputpath="/home/iosu/workspace/Deep Learning/src/"}
+	Most of this code is implemented and adapted from the Face Detection Tutorial \cite{torchCodeSource}.
+		\subsection{Options file} \label{luaOpt}
+		\lstinputlisting[caption=Parameters that will determine the CNN.]{opt.lua}
+		\subsection{Loading data} \label{luaData}
+		\lstinputlisting[caption=Lua code for loading the data from files in the machine.]{loading.lua}
+		\subsection{Building the network} \label{luaModel}
+		\lstinputlisting[caption=Lua code to build the Neural Network.]{model.lua}
+		\subsection{Training the network} \label{luaTrain}
+		\lstinputlisting[caption=Lua code to train the network weights and biases.]{train.lua}
+		\subsection{Testing the network} \label{luaTest}
+		\lstinputlisting[caption=Lua code to test the effectiveness.]{test.lua}
+		\subsection{Main file} \label{luaRun}
+		\lstinputlisting[caption=Lua code for the main file that will run the program.]{run.lua}
+
+\end{document}

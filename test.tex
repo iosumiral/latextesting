@@ -1,0 +1,103 @@
+\documentclass[12pt,titlepage]{article}
+
+\usepackage{fontspec}% to include the Tahoma font
+\usepackage{epigraph}% to add the epigraph at the front page
+%\setmainfont{Tahoma}
+\usepackage{graphicx}% to include images
+\usepackage{titlesec}% to set the styles of sections
+\usepackage{titleps}% to set page styles
+\usepackage[left=2cm,right=3cm,top=5cm,headsep=3cm,bottom=3cm,foot=2cm]{geometry}% to set margins
+\usepackage{lastpage}% to know the number of pages
+\usepackage{afterpage}% to include the blank page at the end
+\usepackage{fancyhdr}% to set fancy headers and footers
+\usepackage{background} % to set the default background
+\usepackage{tikz}% to set different backgrounds
+%\usepackage[usenames, dvipsnames]{color}% to define colours
+%\definecolor{npawLightGrey}{RGB}{236,238,243}
+%\definecolor{npawDarkBlue}{RGB}{38,42,55}
+%\definecolor{npawDarkGrey}{RGB}{126,126,132}
+%\definecolor{npawLightBlue}{RGB}{0,60,126}
+%\definecolor{npawPink}{RGB}{229,0,95}
+
+\defaultfontfeatures{Ligatures=TeX}
+
+% title specifications
+\title{
+	\PageBackground
+	\frontpageA{Marc, si us Plau}
+	\vfill
+	\epigraph{
+		\frontpageB{A modular text} \\
+		\frontpageC{Why is this not slanted}
+		}
+	}
+\author{}
+\date{}
+\graphicspath{{\picsfolder}}
+
+
+\input{pagestyles.tex}
+
+\pagestyle{content}
+
+% all of these to specify styles for sections and paragraphs
+\titleformat*{\section}{\headingA}
+\titleformat*{\subsection}{\headingB}
+\titleformat*{\subsubsection}{\headingB}
+\titleformat*{\paragraph}{\headingC}
+\titleformat*{\subparagraph}{\headingC}
+
+\usepackage{lipsum} % to write lorem ipsums
+
+\begin{document}
+
+% a command to specify a different background
+\newcommand\PageBackground{
+    \tikz[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (current
+    page.center){\includegraphics[width=\paperwidth,height=\paperheight]{background_title.png}};
+}
+
+%fonts
+\input{variables.tex}
+\input{fonts.tex}
+
+% title page
+\thispagestyle{frontpage}
+\maketitle
+%\newpage
+
+% table of contents
+\tableofcontents
+\newpage
+
+\section{Section}
+
+\subsection{Subsection}
+
+\paragraph{Some paragraph}
+
+\lipsum[1]
+
+\paragraph{Some other paragraph}
+
+\lipsum[2]
+
+\subsection{Another subsection}
+
+\paragraph{Yet another paragraph}
+
+\lipsum[3]
+
+\section{Another section}
+
+\paragraph{Paragraph for no reason}
+\lipsum[4]
+\subparagraph{Maybe a subparagraph here}
+\lipsum[5]
+
+% back page
+\newpage
+\pagestyle{backpage}
+\afterpage{\PageBackground\null}
+  
+\end{document}  
