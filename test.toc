@@ -1,0 +1,9 @@
+\contentsline {section}{\numberline {1}Section}{2}
+\contentsline {subsection}{\numberline {1.1}Subsection}{2}
+\contentsline {paragraph}{Some paragraph}{2}
+\contentsline {paragraph}{Some other paragraph}{2}
+\contentsline {subsection}{\numberline {1.2}Another subsection}{2}
+\contentsline {paragraph}{Yet another paragraph}{2}
+\contentsline {section}{\numberline {2}Another section}{2}
+\contentsline {paragraph}{Paragraph for no reason}{2}
+\contentsline {subparagraph}{Maybe a subparagraph here}{3}

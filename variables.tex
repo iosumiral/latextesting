@@ -1,5 +1,8 @@
 \newcommand\npawLightGrey{eceef3}
 \newcommand\npawLightBlue{005a7e}
+\newcommand\npawRubineRed{e5005f}
+\newcommand\npawDarkGrey{7e7e84}
+\newcommand\npawDarkBlue{262a37}
 \newcommand\fpAscale{3.33}
 \newcommand\fpBscale{2.08}
 \newcommand\fpCscale{1.66}
@@ -9,3 +12,8 @@
 \newcommand\ftscale{1}
 \newcommand\picsfolder{./pictures/}
 \newcommand\defaultfont{Tahoma}
+% a command to specify a different background
+\newcommand\PageBackground{
+    \tikz[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (current
+    page.center){\includegraphics[width=\paperwidth,height=\paperheight]{background_title.png}};
+}
