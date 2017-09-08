@@ -21,32 +21,13 @@
 
 \defaultfontfeatures{Ligatures=TeX}
 
-% title specifications
-\title{
-	\PageBackground
-	\frontpageA{Marc, si us Plau}
-	\vfill
-	\epigraph{
-		\frontpageB{A modular text} \\
-		\frontpageC{Why is this not slanted}
-		}
-	}
-\author{}
-\date{}
-\graphicspath{{\picsfolder}}
+\input{title.tex}
 
+\graphicspath{{\picsfolder}}
 
 \input{pagestyles.tex}
 
 \pagestyle{content}
-
-% all of these to specify styles for sections and paragraphs
-\titleformat*{\section}{\headingA}
-\titleformat*{\subsection}{\headingB}
-\titleformat*{\subsubsection}{\headingB}
-\titleformat*{\paragraph}{\headingC}
-\titleformat*{\subparagraph}{\headingC}
-
 \usepackage{lipsum} % to write lorem ipsums
 
 \begin{document}
