@@ -1,0 +1,12 @@
+% title specifications
+\title{
+	\PageBackground
+	\frontpageA{Anomaly Detection}
+	\vfill
+	\epigraph{
+		\frontpageB{Documentation} \\
+		\frontpageC{Brief explanation of parameters}
+		}
+	}
+\author{Nice People at Work}
+\date{}

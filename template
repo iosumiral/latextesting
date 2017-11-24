@@ -23,19 +23,19 @@
 
 \defaultfontfeatures{Ligatures=TeX}
 
-\input{title.tex}
+\input{title}
 
 \graphicspath{{\picsfolder}}
 
-\input{pagestyles.tex}
+\input{pagestyles}
 
 \pagestyle{content}
 
 \begin{document}
 
-\input{variables.tex}
-\input{picscommands.tex}
-\input{fonts.tex}
+\input{variables}
+\input{picscommands}
+\input{fonts}
 
 % title page
 \thispagestyle{frontpage}

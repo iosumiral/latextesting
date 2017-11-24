@@ -1,0 +1,127 @@
+\documentclass[12pt,titlepage]{article}
+
+\usepackage{fontspec}% to include the Tahoma font
+\usepackage{epigraph}% to add the epigraph at the front page
+%\setmainfont{Tahoma}
+\usepackage{graphicx}% to include images
+\usepackage{titlesec}% to set the styles of sections
+\usepackage{etoolbox}% solves a bug with titlesec
+	\makeatletter
+	\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+	\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+	\makeatother
+\usepackage{titleps}% to set page styles
+\usepackage[left=2cm,right=3cm,top=5cm,headsep=3cm,bottom=3cm,foot=2cm]{geometry}% to set margins
+\usepackage{lastpage}% to know the number of pages
+\usepackage{afterpage}% to include the blank page at the end
+\usepackage{fancyhdr}% to set fancy headers and footers
+\usepackage{background} % to set the default background
+\usepackage{tikz}% to set different backgrounds
+
+\usepackage{lipsum} % to write lorem ipsums
+
+\defaultfontfeatures{Ligatures=TeX}
+
+\input{title}
+
+\graphicspath{{\picsfolder}}
+
+\input{pagestyles}
+
+\pagestyle{content}
+
+\begin{document}
+
+\input{variables}
+\input{picscommands}
+\input{fonts}
+
+% title page
+\thispagestyle{frontpage}
+\maketitle
+%\newpage
+
+
+\section*{Introduction}
+
+Automatic anomaly detection and classification is a useful tool for any company, but especially so for those ones which depend on quality. In order to best suit this tool for our clients, our new version of the SmartAlerts module has been designed with customization in mind. The goal of this documentation is explaining the most important parameters for SmartAlerts, their meaning and their relevance in detecting quality problems.
+
+% table of contents
+\tableofcontents
+\newpage
+
+\section{A brief explanation of the system}
+
+This system was constructed with three separate parts in mind: detecting, classifying and watching. Each part is independent of the rest, with its own input and output.
+
+\subsection{Detecting}
+By analyzing historical data, the system is able to set up a general shape that events take. This allows us to know whether, for example, a buffer ratio of 30\% is something to be expected or not.
+\paragraph{input} A stream of events from Kafka
+\paragraph{output} A collection of anomalous events
+
+\subsection{Classifying}
+A machine learning process allows us here to find which combination of entities (such as Barcelona + Akamai) is the most relevant every minute. An issue is created for every combination, storing some information such as importance, time of creation or views affected.
+\paragraph{input} A collection of anomalous events
+\paragraph{output} A collection of issues to watch
+
+\subsection{Watching}
+Finally, the issues are watched over time. Every minute, their importance gets updated with the information coming from the previous part, and, if a threshold is surpassed, an alert is created.
+\paragraph{input} A collection of issues to watch
+\paragraph{output} Alerts 
+
+\newpage
+
+\section{Parameters}
+Right now the parameters need to be changed directly in the database via a script (see commands in section \ref{comm}). The table \texttt{anomaly\_detection\_system\_properties} holds the following:
+\begin{verbatim}
++------------------------+---------------------+------+-----+
+| Field                  | Type                | Null | Key |
++------------------------+---------------------+------+-----+
+| system_id              | int(10) unsigned    | NO   | PRI |
+| cooldown               | float unsigned      | NO   |     |
+| upper_bound            | float unsigned      | NO   |     |
+| low_bound              | float unsigned      | NO   |     |
+| ceiling                | float unsigned      | NO   |     |
+| dimensions             | varchar(150)        | NO   |     |
+| sliding_max_importance | float unsigned      | NO   |     |
+| min_views              | int(10)             | NO   |     |
++------------------------+---------------------+------+-----+
+\end{verbatim}
+\subsection{Definitions}
+\paragraph{\texttt{system\_id}} the identifier for the system
+\paragraph{\texttt{cooldown}} every minute, the importance of an issue gets multiplied by the cooldown value. This ensures that, over time, issues which aren't repeatedly watched get dropped.
+\paragraph{\texttt{upper\_bound}} upon reaching the upper bound, an issue is opened and the client receives an alert.
+\paragraph{\texttt{low\_bound}} an open issue which drops below the lower bound is closed and saved in the historical table.
+\paragraph{\texttt{ceiling}} maximum total importance of an alert.
+\paragraph{\texttt{dimensions}} the possible filters on which the system operates
+\paragraph{\texttt{sliding\_max\_importance}} establishes the relative importance of the filter entity with the most concurrencies, with respect to the one with least. \\For instance, in the case \texttt{$sliding\_max\_importance=3$} if the greatest entity in the filter city is Barcelona, and the smallest one is Roquetes, then an anomaly in Barcelona is three times as important as one in Roquetes.
+\paragraph{\texttt{min\_views}} the minimum amount of anomalies necessary to open an alert.
+\newpage
+\subsection{Effects}
+\insertpicture{alert_Barcelona_JOINTIME_0.700000_0.900000_2.000000_3.000000_1.png}{\small{Importance for \texttt{cooldown 0.7, low\_bound 0.9, upper\_bound 2, max\_importance 1}}}{0.35}{alert}
+As seen in Figure \ref{alert}, the issue becomes more important when it gets new information, and it progressively loses importance otherwise. The green and red boundaries mark the points in time when the alert gets opened and closed. In this case, it opened twice.
+
+\newpage
+\section{Commands}\label{comm}
+Here's what happens upon calling the \texttt{./anomalyDetectionDatabaseScript.sh}:
+\begin{verbatim}
+This is a script to set system options in SmartAlerts.
+Please start by specifying a system code. Then, the options to set are:
+
+-t|--toggle [0/1]
+Toggles a system on or off.
+
+-m|--modify [field] [value]
+Modifies a field to the value set.
+
+-c|--check
+Shows the values set in the system.
+\end{verbatim}
+
+
+% back page
+\newpage
+\pagestyle{backpage}
+\afterpage{\PageBackground\null}
+  
+\end{document}  

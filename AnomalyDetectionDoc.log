@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.8.31)  11 OCT 2017 12:09
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.8.31)  23 NOV 2017 17:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**test.tex
-(./test.tex
+**AnomalyDetectionDoc.tex
+(./AnomalyDetectionDoc.tex
 LaTeX2e <2016/02/01>
 Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -364,6 +364,10 @@ Package: titlesec 2016/03/15 v2.10.1 Sectioning titles
 \titlewidthlast=\dimen142
 \titlewidthfirst=\dimen143
 )
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2015/08/02 v2.2a e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count121
+)
 (/usr/share/texlive/texmf-dist/tex/latex/titlesec/titleps.sty
 Package: titleps 2016/03/15 v1.1.1 Page styles
 
@@ -384,9 +388,9 @@ Package ifvtex Info: VTeX not detected.
 (/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count121
-\Gm@cntv=\count122
-\c@Gm@tempcnt=\count123
+\Gm@cnth=\count122
+\Gm@cntv=\count123
+\c@Gm@tempcnt=\count124
 \Gm@bindingoffset=\dimen144
 \Gm@wd@mp=\dimen145
 \Gm@odd@mp=\dimen146
@@ -428,7 +432,7 @@ Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
 \XKV@toks=\toks20
 \XKV@tempa@toks=\toks21
 )
-\XKV@depth=\count124
+\XKV@depth=\count125
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
@@ -473,10 +477,10 @@ ex
 \pgf@yc=\dimen161
 \w@pgf@writea=\write3
 \r@pgf@reada=\read2
-\c@pgf@counta=\count125
-\c@pgf@countb=\count126
-\c@pgf@countc=\count127
-\c@pgf@countd=\count128
+\c@pgf@counta=\count126
+\c@pgf@countb=\count127
+\c@pgf@countc=\count128
+\c@pgf@countd=\count129
 \t@pgf@toka=\toks26
 \t@pgf@tokb=\toks27
 \t@pgf@tokc=\toks28
@@ -495,13 +499,13 @@ File: pgfsys-dvipdfmx.def 2014/07/09  (rcs-revision 1.14)
 f
 File: pgfsys-common-pdf.def 2013/10/10  (rcs-revision 1.13)
 )
-\pgfsys@objnum=\count129
+\pgfsys@objnum=\count130
 )))
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.
 tex
 File: pgfsyssoftpath.code.tex 2013/09/09  (rcs-revision 1.9)
-\pgfsyssoftpath@smallbuffer@items=\count130
-\pgfsyssoftpath@bigbuffer@items=\count131
+\pgfsyssoftpath@smallbuffer@items=\count131
+\pgfsyssoftpath@bigbuffer@items=\count132
 )
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.
 tex
@@ -530,7 +534,7 @@ Package: pgfcore 2010/04/11 v3.0.1a (rcs-revision 1.7)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
 \pgfmath@dimen=\dimen162
-\pgfmath@count=\count132
+\pgfmath@count=\count133
 \pgfmath@box=\box45
 \pgfmath@toks=\toks29
 \pgfmath@stack@operand=\toks30
@@ -554,7 +558,7 @@ tex)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integerari
 thmetics.code.tex)))
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
-\c@pgfmathroundto@lastzeros=\count133
+\c@pgfmathroundto@lastzeros=\count134
 ))
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.te
 x
@@ -592,7 +596,7 @@ File: pgfcorescopes.code.tex 2015/05/08  (rcs-revision 1.46)
 \pgfpic=\box46
 \pgf@hbox=\box47
 \pgf@layerbox@main=\box48
-\pgf@picture@serial@count=\count134
+\pgf@picture@serial@count=\count135
 )
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicstate.c
 ode.tex
@@ -625,7 +629,7 @@ File: pgfcorearrows.code.tex 2015/05/14  (rcs-revision 1.43)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
 File: pgfcoreshade.code.tex 2013/07/15  (rcs-revision 1.15)
 \pgf@max=\dimen186
-\pgf@sys@shading@range@num=\count135
+\pgf@sys@shading@range@num=\count136
 )
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
 File: pgfcoreimage.code.tex 2013/07/15  (rcs-revision 1.18)
@@ -682,7 +686,7 @@ Package: tikz 2015/08/07 v3.0.1a (rcs-revision 1.151)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers
 .code.tex
 File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.1a (rcs-revision 1.20)
-\pgf@plot@mark@count=\count136
+\pgf@plot@mark@count=\count137
 \pgfplotmarksize=\dimen191
 )
 \tikz@lastx=\dimen192
@@ -695,18 +699,18 @@ File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.1a (rcs-revision 1.20)
 \tikz@figbox@bg=\box52
 \tikz@tempbox=\box53
 \tikz@tempbox@bg=\box54
-\tikztreelevel=\count137
-\tikznumberofchildren=\count138
-\tikznumberofcurrentchild=\count139
-\tikz@fig@count=\count140
+\tikztreelevel=\count138
+\tikznumberofchildren=\count139
+\tikznumberofcurrentchild=\count140
+\tikz@fig@count=\count141
 
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
 File: pgfmodulematrix.code.tex 2013/09/17  (rcs-revision 1.8)
-\pgfmatrixcurrentrow=\count141
-\pgfmatrixcurrentcolumn=\count142
-\pgf@matrix@numberofcolumns=\count143
+\pgfmatrixcurrentrow=\count142
+\pgfmatrixcurrentcolumn=\count143
+\pgf@matrix@numberofcolumns=\count144
 )
-\tikz@expandcount=\count144
+\tikz@expandcount=\count145
 
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
 zlibrarytopaths.code.tex
@@ -717,31 +721,32 @@ Package: everypage 2007/06/20 1.1 Hooks to run on every page
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty
 Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
-\c@lips@count=\count145
-) (./title.tex)
-(./pagestyles.tex) (./test.aux)
-\openout1 = `test.aux'.
+\c@lips@count=\count146
+) (./title)
+(./pagestyles) (./AnomalyDetectionDoc.aux)
+\openout1 = `AnomalyDetectionDoc.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 34.
-LaTeX Font Info:    Try loading font information for T3+cmr on input line 34.
- (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 33.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 33.
+
+(/usr/share/texmf/tex/latex/tipa/t3cmr.fd
 File: t3cmr.fd 2001/12/31 TIPA font definitions
 )
-LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    ... okay on input line 33.
 .................................................
 . fontspec info: "setup-math"
 . 
@@ -749,57 +754,57 @@ LaTeX Font Info:    ... okay on input line 34.
 .................................................
 \symlegacymaths=\mathgroup4
 LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
-(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 34.
-LaTeX Font Info:    Redeclaring math accent \acute on input line 34.
-LaTeX Font Info:    Redeclaring math accent \grave on input line 34.
-LaTeX Font Info:    Redeclaring math accent \ddot on input line 34.
-LaTeX Font Info:    Redeclaring math accent \tilde on input line 34.
-LaTeX Font Info:    Redeclaring math accent \bar on input line 34.
-LaTeX Font Info:    Redeclaring math accent \breve on input line 34.
-LaTeX Font Info:    Redeclaring math accent \check on input line 34.
-LaTeX Font Info:    Redeclaring math accent \hat on input line 34.
-LaTeX Font Info:    Redeclaring math accent \dot on input line 34.
-LaTeX Font Info:    Redeclaring math accent \mathring on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \colon on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Delta on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Theta on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Xi on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Pi on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Phi on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Psi on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \Omega on input line 34.
-LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 34.
-LaTeX Font Info:    Redeclaring symbol font `operators' on input line 34.
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 33.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 33.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 33.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 33.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 33.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 33.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 33.
+LaTeX Font Info:    Redeclaring math accent \check on input line 33.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 33.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 33.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \colon on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 33.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 33.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 33.
 LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
-(Font)              `operators' in the math version `normal' on input line 34.
+(Font)              `operators' in the math version `normal' on input line 33.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> EU1/lmr/m/n on input line 34.
+(Font)                  OT1/cmr/m/n --> EU1/lmr/m/n on input line 33.
 LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
-(Font)              `operators' in the math version `bold' on input line 34.
+(Font)              `operators' in the math version `bold' on input line 33.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> EU1/lmr/m/n on input line 34.
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/m/n on input line 33.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 34.
+(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> EU1/lmr/m/it on input line 34.
+(Font)                  OT1/cmr/m/it --> EU1/lmr/m/it on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> EU1/lmr/bx/n on input line 34.
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/bx/n on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> EU1/lmss/m/n on input line 34.
+(Font)                  OT1/cmss/m/n --> EU1/lmss/m/n on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> EU1/lmtt/m/n on input line 34.
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/m/n on input line 33.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 34.
+(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> EU1/lmr/bx/it on input line 34.
+(Font)                  OT1/cmr/bx/it --> EU1/lmr/bx/it on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> EU1/lmss/bx/n on input line 34.
+(Font)                  OT1/cmss/bx/n --> EU1/lmss/bx/n on input line 33.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> EU1/lmtt/bx/n on input line 34.
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/bx/n on input line 33.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -837,15 +842,14 @@ LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 34.
-ABD: EveryShipout initializing macros (./variables.tex) (./picscommands.tex)
-(./fonts.tex
+(lastpage)             ! on input line 33.
+ABD: EveryShipout initializing macros (./variables) (./picscommands) (./fonts
 .................................................
 . fontspec info: "no-scripts"
 . 
 . Font Tahoma does not contain any OpenType `Script' information.
 .................................................
-\g__fontspec_family_Tahoma_int=\count146
+\g__fontspec_family_Tahoma_int=\count147
 .................................................
 . fontspec info: "no-font-shape"
 . 
@@ -1064,54 +1068,55 @@ ABD: EveryShipout initializing macros (./variables.tex) (./picscommands.tex)
 .................................................
 )
 File: ./pictures/background_title.png Graphic file (type QTm)
- <use  "./pictures/background_title.png" >
-LaTeX Font Info:    Font shape `EU1/Tahoma(0)/m/n' will be
-(Font)              scaled to size 69.06425pt on input line 42.
-LaTeX Font Info:    Font shape `EU1/Tahoma(0)/m/n' will be
-(Font)              scaled to size 36.4635pt on input line 42.
-LaTeX Font Info:    Font shape `EU1/Tahoma(1)/m/n' will be
-(Font)              scaled to size 22.776pt on input line 42.
-LaTeX Font Info:    Font shape `EU1/Tahoma(2)/m/n' will be
-(Font)              scaled to size 18.17703pt on input line 42.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 42.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 42.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 42.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 42.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 42.
-File: ./pictures/footer.png Graphic file (type QTm)
 
-<use  "./pictures/footer.png" > [1
+<use  "./pictures/background_title.png" >
+LaTeX Font Info:    Font shape `EU1/Tahoma(0)/m/n' will be
+(Font)              scaled to size 69.06425pt on input line 41.
+LaTeX Font Info:    Font shape `EU1/Tahoma(0)/m/n' will be
+(Font)              scaled to size 36.4635pt on input line 41.
+LaTeX Font Info:    Font shape `EU1/Tahoma(1)/m/n' will be
+(Font)              scaled to size 22.776pt on input line 41.
+LaTeX Font Info:    Font shape `EU1/Tahoma(2)/m/n' will be
+(Font)              scaled to size 18.17703pt on input line 41.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 41.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 41.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 41.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 41.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 41.
+File: ./pictures/footer.png Graphic file (type QTm)
+ <use  "./pictures/footer.png" >
+[1
 
 ]
 LaTeX Font Info:    Font shape `EU1/Tahoma(4)/m/n' will be
-(Font)              scaled to size 15.96002pt on input line 46.
- (./test.toc
+(Font)              scaled to size 15.96002pt on input line 45.
+ (./AnomalyDetectionDoc.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <12> on input line 2.
 )
 \tf@toc=\write4
-\openout4 = `test.toc'.
+\openout4 = `AnomalyDetectionDoc.toc'.
 
 File: ./pictures/footer.png Graphic file (type QTm)
-
-<use  "./pictures/footer.png" >
+ <use  "./pictures/footer.png" >
 File: ./pictures/logo_color.png Graphic file (type QTm)
- <use  "./pictures/logo_color.png" >
+
+<use  "./pictures/logo_color.png" >
 Overfull \vbox (34.7306pt too high) has occurred while \output is active []
 
 LaTeX Font Info:    Font shape `EU1/Tahoma(3)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 47.
+(Font)              scaled to size 14.4pt on input line 51.
 
 [1]
 LaTeX Font Info:    Font shape `EU1/Tahoma(5)/m/n' will be
-(Font)              scaled to size 12.96002pt on input line 51.
+(Font)              scaled to size 12.96002pt on input line 57.
 LaTeX Font Info:    Font shape `EU1/Tahoma(6)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 53.
+(Font)              scaled to size 12.0pt on input line 59.
 File: ./pictures/footer.png Graphic file (type QTm)
  <use  "./pictures/footer.png" >
 File: ./pictures/logo_color.png Graphic file (type QTm)
@@ -1120,6 +1125,20 @@ Overfull \vbox (34.7306pt too high) has occurred while \output is active []
 
 
 [2]
+LaTeX Font Info:    Try loading font information for EU1+lmtt on input line 75.
+
+ (/usr/share/texlive/texmf-dist/tex/latex/euenc/eu1lmtt.fd
+File: eu1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+File: ./pictures/footer.png Graphic file (type QTm)
+
+<use  "./pictures/footer.png" >
+File: ./pictures/logo_color.png Graphic file (type QTm)
+ <use  "./pictures/logo_color.png" >
+Overfull \vbox (34.7306pt too high) has occurred while \output is active []
+
+
+[3]
 File: ./pictures/footer.png Graphic file (type QTm)
  <use  "./pictures/footer.png" >
 File: ./pictures/logo_color.png Graphic file (type QTm)
@@ -1127,27 +1146,49 @@ File: ./pictures/logo_color.png Graphic file (type QTm)
 Overfull \vbox (34.7306pt too high) has occurred while \output is active []
 
 
-[3]
+[4]
+File: ./pictures/alert_Barcelona_JOINTIME_0.700000_0.900000_2.000000_3.000000_1
+.png Graphic file (type QTm)
+
+<use  "./pictures/alert_Barcelona_JOINTIME_0.700000_0.900000_2.000000_3.000000_
+1.png" >
+Overfull \hbox (33.86734pt too wide) in paragraph at lines 101--101
+ [][] 
+ []
+
+File: ./pictures/footer.png Graphic file (type QTm)
+<use  "./pictures/footer.png" >
+File: ./pictures/logo_color.png Graphic file (type QTm)
+ <use  "./pictures/logo_color.png" >
+Overfull \vbox (34.7306pt too high) has occurred while \output is active []
+
+
+[5]
+File: ./pictures/footer.png Graphic file (type QTm)
+ <use  "./pictures/footer.png" >
+File: ./pictures/logo_color.png Graphic file (type QTm)
+ <use  "./pictures/logo_color.png" >
+Overfull \vbox (34.7306pt too high) has occurred while \output is active []
+
+
+[6]
 File: ./pictures/background_title.png Graphic file (type QTm)
  <use  "./pictures/background_title.png" > 
 AED: lastpage setting LastPage
 File: ./pictures/footer.png Graphic file (type QTm)
 <use  "./pictures/footer.png" >
 File: ./pictures/logo_w.png Graphic file (type QTm)
- <use  "./pictures/logo_w.png" > [4
+ <use  "./pictures/logo_w.png" > [7
 
-] (./test.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+]
+(./AnomalyDetectionDoc.aux) ) 
 Here is how much of TeX's memory you used:
- 25070 strings out of 493638
- 506200 string characters out of 6146796
- 583855 words of memory out of 5000000
- 28134 multiletter control sequences out of 15000+600000
- 8389 words of font info for 52 fonts, out of 8000000 for 9000
+ 25419 strings out of 493638
+ 510952 string characters out of 6146796
+ 592584 words of memory out of 5000000
+ 28470 multiletter control sequences out of 15000+600000
+ 8405 words of font info for 54 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 62i,10n,62p,10404b,765s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,10n,62p,10419b,765s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on test.pdf (5 pages).
+Output written on AnomalyDetectionDoc.pdf (8 pages).
